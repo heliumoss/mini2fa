@@ -8,13 +8,15 @@ app.get("/", (ctx) =>
 );
 app.post("/v1/gen", async (ctx) => {
   const { account, service } = await ctx.req.parseBody();
+  if (!account || !service)
+    return ctx.json({ error: true, message: "INVALID_REQUEST" }, 400);
 
   const secret = n2fa.generateSecret({
     name: service,
     account,
   });
 
-  return ctx.json(secret);
+  return ctx.json({ error: false, ...secret });
 });
 
 app.post("/v1/verify", async (ctx) => {
